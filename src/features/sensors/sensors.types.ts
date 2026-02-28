@@ -1,0 +1,1 @@
+// Sensors feature types
