@@ -49,5 +49,6 @@ docs/
 # claude
 .claude/
 
-# vscode
+# IDEs
 .vscode/
+.idea/

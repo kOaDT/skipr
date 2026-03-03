@@ -8,3 +8,11 @@ export {
 } from './config';
 
 export { COLORS, SPACING, FONT_SIZE } from './designTokens';
+
+export {
+  MAP_STYLE_URL,
+  DEFAULT_CENTER_COORDINATE,
+  DEFAULT_ZOOM_LEVEL,
+  MIN_ZOOM_LEVEL,
+  MAX_ZOOM_LEVEL,
+} from './mapConfig';

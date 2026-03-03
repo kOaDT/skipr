@@ -1,4 +1,4 @@
-# Sailing App
+# Skipr
 
 Offline-first marine navigation mobile app built with Expo SDK 55, React Native, and MapLibre.
 
