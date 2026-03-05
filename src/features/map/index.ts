@@ -1,3 +1,4 @@
 // Public API for map feature
 export { MapView } from './components/MapView';
-export type { MapViewProps } from './map.types';
+export { useMapStyle } from './hooks/useMapStyle';
+export type { MapViewProps, MapStyleJSON } from './map.types';

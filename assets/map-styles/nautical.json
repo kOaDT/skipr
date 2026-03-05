@@ -1,0 +1,201 @@
+{
+  "version": 8,
+  "name": "Skipr Nautical",
+  "metadata": {
+    "description": "Simplified S-52 nautical chart style for Skipr MVP"
+  },
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://tiles.openfreemap.org/planet"
+    }
+  },
+  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#D3BB79"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          2, "#D4E4F1",
+          6, "#A6C6E3",
+          10, "#83B8E0",
+          14, "#83B8E0"
+        ]
+      }
+    },
+    {
+      "id": "depth-shallow",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, "#A6C6E3",
+          12, "#83B8E0",
+          16, "#83B8E0"
+        ],
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 0,
+          12, 0.3
+        ]
+      },
+      "minzoom": 8
+    },
+    {
+      "id": "depth-medium",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#A6C6E3",
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0,
+          14, 0.2
+        ]
+      },
+      "minzoom": 10
+    },
+    {
+      "id": "depth-deep",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#D4E4F1",
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          6, 0,
+          10, 0.15
+        ]
+      },
+      "minzoom": 6
+    },
+    {
+      "id": "land",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "paint": {
+        "fill-color": "#C5B06A",
+        "fill-opacity": 0.4
+      }
+    },
+    {
+      "id": "landuse",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landuse",
+      "paint": {
+        "fill-color": "#C8A050",
+        "fill-opacity": 0.5
+      },
+      "minzoom": 8
+    },
+    {
+      "id": "coastline",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "line-color": "#8C908A",
+        "line-width": 1.5
+      }
+    },
+    {
+      "id": "depth-contours",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "paint": {
+        "line-color": "#4A7FB5",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 0.5,
+          14, 1
+        ],
+        "line-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8, 0.3,
+          12, 0.6
+        ]
+      },
+      "minzoom": 8
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "paint": {
+        "line-color": "#CCCCCC",
+        "line-width": 1
+      },
+      "minzoom": 12
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "paint": {
+        "fill-color": "#CCCCCC",
+        "fill-opacity": 0.5
+      },
+      "minzoom": 14
+    },
+    {
+      "id": "place-labels",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "layout": {
+        "text-field": "{name}",
+        "text-font": ["Noto Sans Regular"],
+        "text-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          4, 10,
+          8, 12,
+          14, 14
+        ],
+        "text-max-width": 8,
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#1A1A2E",
+        "text-halo-color": "#FFFFFF",
+        "text-halo-width": 1.5
+      },
+      "minzoom": 4
+    }
+  ]
+}
