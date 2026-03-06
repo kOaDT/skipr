@@ -8,14 +8,16 @@ import {
   MIN_ZOOM_LEVEL,
   NAUTICAL_LOADING_BG,
 } from '@/constants';
-import { useMapStyle } from '../hooks/useMapStyle';
+import { useMapLayers } from '../hooks/useMapLayers';
 import type { MapViewProps } from '../map.types';
+
+import { LayerToggle } from './LayerToggle';
 
 // Ensure MapLibre knows it can fetch tiles over the network
 MapLibreGL.setConnected(true);
 
 export function MapView({ style, testID }: MapViewProps) {
-  const { mapStyle, isLoading } = useMapStyle();
+  const { filteredStyle, isLoading } = useMapLayers();
 
   if (isLoading) {
     return (
@@ -27,26 +29,29 @@ export function MapView({ style, testID }: MapViewProps) {
   }
 
   return (
-    <MapLibreGL.MapView
-      testID={testID}
-      style={[{ flex: 1 }, style]}
-      mapStyle={mapStyle}
-      zoomEnabled
-      scrollEnabled
-      rotateEnabled
-      pitchEnabled={false}
-      compassEnabled
-      attributionEnabled
-      logoEnabled={false}
-    >
-      <MapLibreGL.Camera
-        defaultSettings={{
-          centerCoordinate: DEFAULT_CENTER_COORDINATE,
-          zoomLevel: DEFAULT_ZOOM_LEVEL,
-        }}
-        minZoomLevel={MIN_ZOOM_LEVEL}
-        maxZoomLevel={MAX_ZOOM_LEVEL}
-      />
-    </MapLibreGL.MapView>
+    <View style={[{ flex: 1 }, style]}>
+      <MapLibreGL.MapView
+        testID={testID}
+        style={{ flex: 1 }}
+        mapStyle={filteredStyle}
+        zoomEnabled
+        scrollEnabled
+        rotateEnabled
+        pitchEnabled={false}
+        compassEnabled
+        attributionEnabled
+        logoEnabled={false}
+      >
+        <MapLibreGL.Camera
+          defaultSettings={{
+            centerCoordinate: DEFAULT_CENTER_COORDINATE,
+            zoomLevel: DEFAULT_ZOOM_LEVEL,
+          }}
+          minZoomLevel={MIN_ZOOM_LEVEL}
+          maxZoomLevel={MAX_ZOOM_LEVEL}
+        />
+      </MapLibreGL.MapView>
+      <LayerToggle />
+    </View>
   );
 }

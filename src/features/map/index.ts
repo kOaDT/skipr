@@ -1,4 +1,6 @@
 // Public API for map feature
 export { MapView } from './components/MapView';
+export { LayerToggle } from './components/LayerToggle';
 export { useMapStyle } from './hooks/useMapStyle';
-export type { MapViewProps, MapStyleJSON } from './map.types';
+export { useMapLayers } from './hooks/useMapLayers';
+export type { MapViewProps, MapStyleJSON, LayerId } from './map.types';

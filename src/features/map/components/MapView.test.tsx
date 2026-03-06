@@ -10,19 +10,18 @@ import {
 
 import { MapView } from './MapView';
 
-const mockUseMapStyle = jest.mocked(
-  jest.requireMock<typeof import('../hooks/useMapStyle')>('../hooks/useMapStyle').useMapStyle,
-);
-
 const nauticalStyle = require('../../../../assets/map-styles/nautical.json');
 
-jest.mock('../hooks/useMapStyle');
+jest.mock('../hooks/useMapLayers');
+
+const mockUseMapLayers = jest.mocked(
+  jest.requireMock<typeof import('../hooks/useMapLayers')>('../hooks/useMapLayers').useMapLayers,
+);
 
 beforeEach(() => {
-  mockUseMapStyle.mockReturnValue({
-    mapStyle: nauticalStyle,
+  mockUseMapLayers.mockReturnValue({
+    filteredStyle: nauticalStyle,
     isLoading: false,
-    error: null,
   });
 });
 
@@ -33,7 +32,7 @@ describe('MapView', () => {
     expect(screen.getByTestId('maplibre-mapview')).toBeTruthy();
   });
 
-  it('renders MapLibreGL.MapView with nautical style object (not URL)', () => {
+  it('passes filteredStyle (not raw style) to MapLibreGL', () => {
     render(<MapView />);
 
     const mapView = screen.getByTestId('maplibre-mapview');
@@ -70,11 +69,16 @@ describe('MapView', () => {
     });
   });
 
+  it('renders LayerToggle', () => {
+    render(<MapView />);
+
+    expect(screen.getByTestId('layer-toggle-button')).toBeTruthy();
+  });
+
   it('shows a loading placeholder while style is loading', () => {
-    mockUseMapStyle.mockReturnValue({
-      mapStyle: nauticalStyle,
+    mockUseMapLayers.mockReturnValue({
+      filteredStyle: nauticalStyle,
       isLoading: true,
-      error: null,
     });
 
     render(<MapView />);

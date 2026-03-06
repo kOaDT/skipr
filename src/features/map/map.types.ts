@@ -2,6 +2,8 @@ import type { ViewProps } from 'react-native';
 
 export type MapViewProps = Pick<ViewProps, 'style' | 'testID'>;
 
+export type LayerId = 'maritime-marks' | 'bathymetry' | 'land';
+
 export type MapStyleLayer = {
   id: string;
   type: 'background' | 'fill' | 'line' | 'symbol' | 'circle' | 'raster' | 'fill-extrusion';
