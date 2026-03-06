@@ -41,6 +41,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-sqlite',
     'expo-asset',
   ],
+  extra: {
+    eas: {
+      projectId: '325d8cef-c14d-45e0-8388-7bfa8363bd42',
+    },
+  },
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
