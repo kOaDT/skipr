@@ -41,6 +41,11 @@ yarn-error.*
 /ios
 /android
 
+# native builds
+*.ipa
+*.apk
+*.aab
+
 # bmad
 _bmad/
 _bmad-output/
