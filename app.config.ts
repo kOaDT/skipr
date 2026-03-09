@@ -10,6 +10,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: 'skipr',
   userInterfaceStyle: 'automatic',
   ios: {
+    bundleIdentifier: 'com.skipr.app',
     icon: './assets/expo.icon',
   },
   android: {
