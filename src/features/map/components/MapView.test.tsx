@@ -12,6 +12,20 @@ import { MapView } from './MapView';
 
 const nauticalStyle = require('../../../../assets/map-styles/nautical.json');
 
+jest.mock('react-native-reanimated', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: {
+      View,
+    },
+    useSharedValue: (initial: number) => ({ value: initial }),
+    useAnimatedStyle: (fn: () => Record<string, unknown>) => fn(),
+    withTiming: (value: number) => value,
+  };
+});
+
 jest.mock('../hooks/useMapLayers');
 
 const mockUseMapLayers = jest.mocked(
