@@ -47,4 +47,68 @@ describe('UserLocationMarker', () => {
 
     expect(screen.getByTestId('maplibre-markerview').props.coordinate).toEqual([2.353, 48.857]);
   });
+
+  it('does not render accuracy circle when gpsAccuracy is null', () => {
+    useSensorsStore.setState({
+      gpsPosition: { latitude: 48.8566, longitude: 2.3522 },
+      gpsAccuracy: null,
+    });
+
+    render(<UserLocationMarker />);
+
+    expect(screen.queryByTestId('accuracy-circle-source')).toBeNull();
+  });
+
+  it('does not render accuracy circle when gpsAccuracy <= 5m', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 5);
+
+    render(<UserLocationMarker />);
+
+    expect(screen.queryByTestId('accuracy-circle-source')).toBeNull();
+  });
+
+  it('renders accuracy circle when gpsAccuracy = 25m', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 25);
+
+    render(<UserLocationMarker />);
+
+    expect(screen.getByTestId('accuracy-circle-source')).toBeTruthy();
+    expect(screen.getByTestId('accuracy-circle-layer')).toBeTruthy();
+  });
+
+  it('renders accuracy circle when gpsAccuracy > 50m', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 60);
+
+    render(<UserLocationMarker />);
+
+    expect(screen.getByTestId('accuracy-circle-source')).toBeTruthy();
+    expect(screen.getByTestId('accuracy-circle-layer')).toBeTruthy();
+  });
+
+  it('applies correct circle radius for accuracy = 25m (min(80, max(20, 37.5)) = 37.5)', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 25);
+
+    render(<UserLocationMarker />);
+
+    const circleLayer = screen.getByTestId('accuracy-circle-layer');
+    expect(circleLayer.props.style.circleRadius).toBe(37.5);
+  });
+
+  it('caps circle radius at max 80px for very poor accuracy', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 100);
+
+    render(<UserLocationMarker />);
+
+    const circleLayer = screen.getByTestId('accuracy-circle-layer');
+    expect(circleLayer.props.style.circleRadius).toBe(80);
+  });
+
+  it('uses minimum radius of 20px for accuracy just above threshold', () => {
+    useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 6);
+
+    render(<UserLocationMarker />);
+
+    const circleLayer = screen.getByTestId('accuracy-circle-layer');
+    expect(circleLayer.props.style.circleRadius).toBe(20);
+  });
 });

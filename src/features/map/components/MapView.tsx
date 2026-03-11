@@ -13,6 +13,7 @@ import { useSensorsStore } from '@/stores';
 import { useMapLayers } from '../hooks/useMapLayers';
 import type { MapViewProps } from '../map.types';
 
+import { GpsPrecisionBadge } from './GpsPrecisionBadge';
 import { LayerToggle } from './LayerToggle';
 import { UserLocationMarker } from './UserLocationMarker';
 
@@ -76,6 +77,7 @@ export function MapView({ style, testID }: MapViewProps) {
         <UserLocationMarker />
       </MapLibreGL.MapView>
       <LayerToggle />
+      <GpsPrecisionBadge />
     </View>
   );
 }

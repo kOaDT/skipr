@@ -28,10 +28,24 @@ function MarkerView({ children, ...props }: Record<string, unknown>) {
   );
 }
 
+function ShapeSource({ children, ...props }: Record<string, unknown>) {
+  return (
+    <View {...props} testID={(props.id as string) ?? 'maplibre-shapesource'}>
+      {children as React.ReactNode}
+    </View>
+  );
+}
+
+function CircleLayer(props: Record<string, unknown>) {
+  return <View {...props} testID={(props.id as string) ?? 'maplibre-circlelayer'} />;
+}
+
 export default {
   MapView,
   Camera,
   MarkerView,
+  ShapeSource,
+  CircleLayer,
   setConnected: jest.fn(),
   setAccessToken: jest.fn(),
   StyleURL: { Default: 'maplibre://styles/default' },
