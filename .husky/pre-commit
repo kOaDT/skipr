@@ -1,1 +1,2 @@
+npx npm-check-updates
 npx lint-staged

@@ -1,4 +1,4 @@
-# Skipr
+# Skipr - Work In Progress
 
 [![CI](https://github.com/kOaDT/skipr/actions/workflows/ci.yml/badge.svg)](https://github.com/kOaDT/skipr/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
