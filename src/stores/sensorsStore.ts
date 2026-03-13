@@ -8,10 +8,14 @@ type SensorsState = {
   isGpsActive: boolean;
   gpsError: string | null;
   lastKnownPosition: Coordinates | null;
+  heading: number | null;
+  isCompassActive: boolean;
   setGpsPosition: (position: Coordinates, accuracy: number) => void;
   setGpsError: (error: string | null) => void;
   setGpsActive: (active: boolean) => void;
-  clearGps: () => void;
+  setHeading: (heading: number | null) => void;
+  setCompassActive: (active: boolean) => void;
+  clearSensors: () => void;
 };
 
 export const useSensorsStore = create<SensorsState>()((set) => ({
@@ -20,6 +24,8 @@ export const useSensorsStore = create<SensorsState>()((set) => ({
   isGpsActive: false,
   gpsError: null,
   lastKnownPosition: null,
+  heading: null,
+  isCompassActive: false,
   setGpsPosition: (position, accuracy) =>
     set({
       gpsPosition: position,
@@ -29,12 +35,16 @@ export const useSensorsStore = create<SensorsState>()((set) => ({
     }),
   setGpsError: (error) => set({ gpsError: error }),
   setGpsActive: (active) => set({ isGpsActive: active }),
-  clearGps: () =>
+  setHeading: (heading) => set({ heading }),
+  setCompassActive: (active) => set({ isCompassActive: active }),
+  clearSensors: () =>
     set({
       gpsPosition: null,
       gpsAccuracy: null,
       isGpsActive: false,
       gpsError: null,
       lastKnownPosition: null,
+      heading: null,
+      isCompassActive: false,
     }),
 }));

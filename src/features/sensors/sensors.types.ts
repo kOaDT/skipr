@@ -6,3 +6,9 @@ export type GpsLocationState = {
   isTracking: boolean;
   error: string | null;
 };
+
+export type CompassState = {
+  heading: number | null;
+  isAvailable: boolean;
+  error: string | null;
+};

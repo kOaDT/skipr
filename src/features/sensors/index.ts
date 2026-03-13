@@ -1,2 +1,3 @@
 export { useGpsLocation } from './hooks/useGpsLocation';
-export type { GpsLocationState } from './sensors.types';
+export { useCompass } from './hooks/useCompass';
+export type { GpsLocationState, CompassState } from './sensors.types';

@@ -19,7 +19,7 @@ jest.mock('react-native-reanimated', () => {
 });
 
 beforeEach(() => {
-  useSensorsStore.getState().clearGps();
+  useSensorsStore.getState().clearSensors();
 });
 
 describe('GpsPrecisionBadge', () => {

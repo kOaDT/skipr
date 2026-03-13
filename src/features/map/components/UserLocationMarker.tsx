@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 
 import { useSensorsStore } from '@/stores';
 
 const MARKER_SIZE = 14;
 const BORDER_WIDTH = 2;
+const DOT_SIZE = MARKER_SIZE + BORDER_WIDTH * 2; // 18
 const ACCURACY_VISIBLE_THRESHOLD = 5;
 const ACCURACY_MIN_RADIUS = 20;
 const ACCURACY_MAX_RADIUS = 80;
@@ -17,7 +17,7 @@ export function UserLocationMarker() {
   const showAccuracyCircle =
     gpsPosition !== null && gpsAccuracy !== null && gpsAccuracy > ACCURACY_VISIBLE_THRESHOLD;
 
-  const accuracyGeoJSON = useMemo(
+  const geoJSON = useMemo(
     () => ({
       type: 'FeatureCollection' as const,
       features: gpsPosition
@@ -46,8 +46,8 @@ export function UserLocationMarker() {
 
   return (
     <>
-      {showAccuracyCircle && (
-        <MapLibreGL.ShapeSource id="accuracy-circle-source" shape={accuracyGeoJSON}>
+      <MapLibreGL.ShapeSource id="user-location-source" shape={geoJSON}>
+        {showAccuracyCircle && (
           <MapLibreGL.CircleLayer
             id="accuracy-circle-layer"
             style={{
@@ -58,38 +58,24 @@ export function UserLocationMarker() {
               circleRadiusTransition: { duration: 300, delay: 0 },
             }}
           />
-        </MapLibreGL.ShapeSource>
-      )}
-      <MapLibreGL.MarkerView
-        coordinate={[gpsPosition.longitude, gpsPosition.latitude]}
-        anchor={{ x: 0.5, y: 0.5 }}
-      >
-        <View testID="user-location-marker" style={styles.outerCircle}>
-          <View style={styles.innerCircle} />
-        </View>
-      </MapLibreGL.MarkerView>
+        )}
+        <MapLibreGL.CircleLayer
+          id="user-dot-border-layer"
+          aboveLayerID="accuracy-circle-layer"
+          style={{
+            circleRadius: DOT_SIZE / 2,
+            circleColor: '#FFFFFF',
+          }}
+        />
+        <MapLibreGL.CircleLayer
+          id="user-dot-layer"
+          aboveLayerID="user-dot-border-layer"
+          style={{
+            circleRadius: MARKER_SIZE / 2,
+            circleColor: '#4285F4',
+          }}
+        />
+      </MapLibreGL.ShapeSource>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  outerCircle: {
-    width: MARKER_SIZE + BORDER_WIDTH * 2,
-    height: MARKER_SIZE + BORDER_WIDTH * 2,
-    borderRadius: (MARKER_SIZE + BORDER_WIDTH * 2) / 2,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  innerCircle: {
-    width: MARKER_SIZE,
-    height: MARKER_SIZE,
-    borderRadius: MARKER_SIZE / 2,
-    backgroundColor: '#4285F4',
-  },
-});

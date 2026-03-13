@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import MapLibreGL, { type CameraStop } from '@maplibre/maplibre-react-native';
 
@@ -13,6 +13,7 @@ import { useSensorsStore } from '@/stores';
 import { useMapLayers } from '../hooks/useMapLayers';
 import type { MapViewProps } from '../map.types';
 
+import { CompassButton } from './CompassButton';
 import { GpsPrecisionBadge } from './GpsPrecisionBadge';
 import { LayerToggle } from './LayerToggle';
 import { UserLocationMarker } from './UserLocationMarker';
@@ -27,7 +28,10 @@ export function MapView({ style, testID }: MapViewProps) {
   const { filteredStyle, isLoading } = useMapLayers();
   const hasCenteredOnUser = useRef(false);
   const [flyToStop, setFlyToStop] = useState<CameraStop | undefined>();
+  const [isHeadingMode, setIsHeadingMode] = useState(false);
+  const [cameraHeading, setCameraHeading] = useState<number | undefined>();
   const gpsPosition = useSensorsStore((s) => s.gpsPosition);
+  const heading = useSensorsStore((s) => s.heading);
 
   // Fly to user position on first GPS fix only
   useEffect(() => {
@@ -41,6 +45,31 @@ export function MapView({ style, testID }: MapViewProps) {
       });
     }
   }, [gpsPosition]);
+
+  // Clear flyToStop after animation to prevent camera reset on re-renders
+  useEffect(() => {
+    if (flyToStop) {
+      const timer = setTimeout(() => setFlyToStop(undefined), FLY_TO_ANIMATION_DURATION + 100);
+      return () => clearTimeout(timer);
+    }
+  }, [flyToStop]);
+
+  // Sync compass heading to camera, with smooth reset to north on deactivation
+  useEffect(() => {
+    if (isHeadingMode) {
+      setCameraHeading(heading ?? 0);
+    } else if (cameraHeading !== undefined) {
+      // Animate back to north, then stop controlling heading
+      setCameraHeading(0);
+      const timer = setTimeout(() => setCameraHeading(undefined), 350);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHeadingMode, heading]);
+
+  const handleToggleHeadingMode = useCallback(() => {
+    setIsHeadingMode((prev) => !prev);
+  }, []);
 
   if (isLoading) {
     return (
@@ -61,7 +90,7 @@ export function MapView({ style, testID }: MapViewProps) {
         scrollEnabled
         rotateEnabled
         pitchEnabled={false}
-        compassEnabled
+        compassEnabled={false}
         attributionEnabled
         logoEnabled={false}
       >
@@ -71,6 +100,13 @@ export function MapView({ style, testID }: MapViewProps) {
             zoomLevel: DEFAULT_ZOOM_LEVEL,
           }}
           {...flyToStop}
+          {...(cameraHeading !== undefined
+            ? {
+                heading: cameraHeading,
+                animationMode: 'easeTo' as const,
+                animationDuration: 300,
+              }
+            : {})}
           minZoomLevel={MIN_ZOOM_LEVEL}
           maxZoomLevel={MAX_ZOOM_LEVEL}
         />
@@ -78,6 +114,11 @@ export function MapView({ style, testID }: MapViewProps) {
       </MapLibreGL.MapView>
       <LayerToggle />
       <GpsPrecisionBadge />
+      <CompassButton
+        isHeadingMode={isHeadingMode}
+        heading={heading}
+        onToggle={handleToggleHeadingMode}
+      />
     </View>
   );
 }
