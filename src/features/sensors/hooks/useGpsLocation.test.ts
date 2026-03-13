@@ -14,7 +14,7 @@ let watchCallback: ((location: Location.LocationObject) => void) | null = null;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  useSensorsStore.getState().clearGps();
+  useSensorsStore.getState().clearSensors();
   watchCallback = null;
 
   mockLocation.requestForegroundPermissionsAsync.mockResolvedValue({

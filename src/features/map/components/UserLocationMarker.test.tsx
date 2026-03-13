@@ -5,39 +5,42 @@ import { useSensorsStore } from '@/stores';
 import { UserLocationMarker } from './UserLocationMarker';
 
 beforeEach(() => {
-  useSensorsStore.getState().clearGps();
+  useSensorsStore.getState().clearSensors();
 });
 
 describe('UserLocationMarker', () => {
   it('renders nothing when gpsPosition is null', () => {
     render(<UserLocationMarker />);
 
-    expect(screen.queryByTestId('user-location-marker')).toBeNull();
+    expect(screen.queryByTestId('user-location-source')).toBeNull();
   });
 
-  it('renders marker when gpsPosition is set', () => {
+  it('renders dot layers when gpsPosition is set', () => {
     useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 10);
 
     render(<UserLocationMarker />);
 
-    expect(screen.getByTestId('user-location-marker')).toBeTruthy();
+    expect(screen.getByTestId('user-dot-layer')).toBeTruthy();
+    expect(screen.getByTestId('user-dot-border-layer')).toBeTruthy();
   });
 
-  it('passes correct coordinates to MarkerView', () => {
+  it('passes correct coordinates to ShapeSource', () => {
     useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 10);
 
     render(<UserLocationMarker />);
 
-    const markerView = screen.getByTestId('maplibre-markerview');
-    expect(markerView.props.coordinate).toEqual([2.3522, 48.8566]);
+    const source = screen.getByTestId('user-location-source');
+    expect(source.props.shape.features[0].geometry.coordinates).toEqual([2.3522, 48.8566]);
   });
 
-  it('updates marker position when store changes', () => {
+  it('updates coordinates when store changes', () => {
     useSensorsStore.getState().setGpsPosition({ latitude: 48.8566, longitude: 2.3522 }, 10);
 
     const { rerender } = render(<UserLocationMarker />);
 
-    expect(screen.getByTestId('maplibre-markerview').props.coordinate).toEqual([2.3522, 48.8566]);
+    expect(
+      screen.getByTestId('user-location-source').props.shape.features[0].geometry.coordinates,
+    ).toEqual([2.3522, 48.8566]);
 
     act(() => {
       useSensorsStore.getState().setGpsPosition({ latitude: 48.857, longitude: 2.353 }, 8);
@@ -45,7 +48,9 @@ describe('UserLocationMarker', () => {
 
     rerender(<UserLocationMarker />);
 
-    expect(screen.getByTestId('maplibre-markerview').props.coordinate).toEqual([2.353, 48.857]);
+    expect(
+      screen.getByTestId('user-location-source').props.shape.features[0].geometry.coordinates,
+    ).toEqual([2.353, 48.857]);
   });
 
   it('does not render accuracy circle when gpsAccuracy is null', () => {
@@ -56,7 +61,7 @@ describe('UserLocationMarker', () => {
 
     render(<UserLocationMarker />);
 
-    expect(screen.queryByTestId('accuracy-circle-source')).toBeNull();
+    expect(screen.queryByTestId('accuracy-circle-layer')).toBeNull();
   });
 
   it('does not render accuracy circle when gpsAccuracy <= 5m', () => {
@@ -64,7 +69,7 @@ describe('UserLocationMarker', () => {
 
     render(<UserLocationMarker />);
 
-    expect(screen.queryByTestId('accuracy-circle-source')).toBeNull();
+    expect(screen.queryByTestId('accuracy-circle-layer')).toBeNull();
   });
 
   it('renders accuracy circle when gpsAccuracy = 25m', () => {
@@ -72,7 +77,6 @@ describe('UserLocationMarker', () => {
 
     render(<UserLocationMarker />);
 
-    expect(screen.getByTestId('accuracy-circle-source')).toBeTruthy();
     expect(screen.getByTestId('accuracy-circle-layer')).toBeTruthy();
   });
 
@@ -81,7 +85,6 @@ describe('UserLocationMarker', () => {
 
     render(<UserLocationMarker />);
 
-    expect(screen.getByTestId('accuracy-circle-source')).toBeTruthy();
     expect(screen.getByTestId('accuracy-circle-layer')).toBeTruthy();
   });
 

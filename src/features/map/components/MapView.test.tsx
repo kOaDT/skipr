@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 
 import {
   DEFAULT_CENTER_COORDINATE,
@@ -7,6 +7,7 @@ import {
   MAX_ZOOM_LEVEL,
   NAUTICAL_LOADING_BG,
 } from '@/constants';
+import { useSensorsStore } from '@/stores';
 
 import { MapView } from './MapView';
 
@@ -23,6 +24,10 @@ jest.mock('react-native-reanimated', () => {
     useSharedValue: (initial: number) => ({ value: initial }),
     useAnimatedStyle: (fn: () => Record<string, unknown>) => fn(),
     withTiming: (value: number) => value,
+    Easing: {
+      out: () => undefined,
+      cubic: undefined,
+    },
   };
 });
 
@@ -33,6 +38,7 @@ const mockUseMapLayers = jest.mocked(
 );
 
 beforeEach(() => {
+  useSensorsStore.getState().clearSensors();
   mockUseMapLayers.mockReturnValue({
     filteredStyle: nauticalStyle,
     isLoading: false,
@@ -65,7 +71,7 @@ describe('MapView', () => {
     expect(mapView.props.scrollEnabled).toBe(true);
     expect(mapView.props.rotateEnabled).toBe(true);
     expect(mapView.props.pitchEnabled).toBe(false);
-    expect(mapView.props.compassEnabled).toBe(true);
+    expect(mapView.props.compassEnabled).toBe(false);
     expect(mapView.props.attributionEnabled).toBe(true);
     expect(mapView.props.logoEnabled).toBe(false);
   });
@@ -87,6 +93,53 @@ describe('MapView', () => {
     render(<MapView />);
 
     expect(screen.getByTestId('layer-toggle-button')).toBeTruthy();
+  });
+
+  it('renders CompassButton', () => {
+    render(<MapView />);
+
+    expect(screen.getByTestId('compass-button')).toBeTruthy();
+  });
+
+  it('does not set camera heading when heading mode is inactive', () => {
+    render(<MapView />);
+
+    const camera = screen.getByTestId('maplibre-camera');
+    expect(camera.props.heading).toBeUndefined();
+  });
+
+  it('sets camera heading when heading mode is activated', () => {
+    useSensorsStore.setState({ heading: 45 });
+
+    render(<MapView />);
+
+    act(() => {
+      fireEvent.press(screen.getByTestId('compass-button'));
+    });
+
+    const camera = screen.getByTestId('maplibre-camera');
+    expect(camera.props.heading).toBe(45);
+    expect(camera.props.animationMode).toBe('easeTo');
+    expect(camera.props.animationDuration).toBe(300);
+  });
+
+  it('resets camera heading to 0 when heading mode is deactivated', () => {
+    useSensorsStore.setState({ heading: 90 });
+
+    render(<MapView />);
+
+    // Activate heading mode
+    act(() => {
+      fireEvent.press(screen.getByTestId('compass-button'));
+    });
+
+    // Deactivate heading mode
+    act(() => {
+      fireEvent.press(screen.getByTestId('compass-button'));
+    });
+
+    const camera = screen.getByTestId('maplibre-camera');
+    expect(camera.props.heading).toBe(0);
   });
 
   it('shows a loading placeholder while style is loading', () => {
